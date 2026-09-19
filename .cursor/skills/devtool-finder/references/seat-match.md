@@ -21,7 +21,7 @@ If two labels could apply, pick the **strictest mismatch** (prefer `wrong_substr
 
 **Exact-mechanics density** -- how many products already *are* this daemon / proxy / compiler / CI check / library. Count `exact` only.
 
-A bundle of three `exact` occupied slices sold as one SKU is **Occupied**, not Sparse. Packaging three occupied tools is not a new seat.
+A bundle of occupied slices sold as one SKU is **Occupied**, not Sparse. Packaging occupied tools is not a new seat. If `v1_as_shipped` is a conjunction, split slices before labeling.
 
 Architecture alternatives are not `exact`. Durable orchestration that *avoids* choreographed sagas (Temporal, Restate, DBOS) is `adjacent_pain` relative to a Kafka wire-protocol DPOR proxy in CI. It treats the pain. It is not the SKU.
 

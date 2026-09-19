@@ -21,6 +21,10 @@ Pitchable **as a company** only if Sparse or Greenfield **and** no automatic rej
 
 Occupied leftover -> `file_on` (flag / plugin / issue on the incumbent). Do not found.
 
+`as_plugin` answers "is the leftover a flag/plugin/issue on a named host?" It cannot be Greenfield when an incumbent leftover already names that host. Greenfield plugin plus an `exact` row is a card fail.
+
+`1_vacant_process` fails when any incumbent is `exact` for a slice of `v1_as_shipped`, unless `file_on` is set on that slice and the company score is only the remaining process. Redefining the seat as "orchestration around the exact primitive" is not a vacant process.
+
 Lowest crowding is not opportunity. A sparse *product* is still a bad build if a one-line config or vendor CLI already removes the pain (`lock_timeout`, ntfy `--wait-cmd`).
 
 Unadopted is not Greenfield. A 0-star sidecar (`tofulock`, layercache, SemaMerge-at-zero-stars) often means the seat is gist-shaped or already named.
@@ -45,7 +49,7 @@ Any one is fatal for an `as_company` Sparse/Greenfield keep:
 2. The product is a 50-line GitHub Action, curl wrapper, or editor hook.
 3. The core transform is mathematically non-invertible and the pitch would have to lie.
 4. The remaining wedge is reverse-mapping a security control (confused deputy; rehydrating redacted secrets).
-5. The remaining wedge is "add this to incumbent X" (Veln, ntfy, silo, cachelens, Pixi, OpenTofu, Cursor, ...).
+5. The remaining wedge is "add this to incumbent X" (Veln, ntfy, silo, cachelens, Pixi, OpenTofu, Cursor, landrun, bubblewrap, pgcopydb, `pg_easy_replicate`, ...). Diagnostics, checkboxes, and orchestration around a named primitive are this reject, not a company.
 6. Silent mutation of user payloads without an advisory/linter-first v1.
 7. Sidecar without **host runtime enforcement** (lockfile the platform does not consult).
 
@@ -73,9 +77,9 @@ Roadmap on an incumbent ("we plan to ship this") is `file_on` / wait, not Sparse
 
 `keep` | `hold` | `drop` | `file_on`
 
-- `keep` -- `as_company` is Sparse or Greenfield, no auto-reject, all three falsification tests hold, >=5 named incumbents (or explicit "could not find 5" plus why the problem is still real).
+- `keep` -- `as_company` is Sparse or Greenfield, no auto-reject, all three falsification tests hold, >=5 named incumbents (or explicit "could not find 5" plus why the problem is still real), **and** `keep_gate: pass`.
 - `file_on` -- Occupied leftover belongs on a named incumbent.
 - `hold` -- Occupied/Saturated **as a company** but the leftover is a clean plugin, OSS experiment, or follow-up seat.
 - `drop` -- Occupied/Saturated **as a company** and leftover is not even a clean plugin, or an auto-reject fired and there is no file-on target; or evidence is too thin to score (`NEED_EVIDENCE` rows dominate).
 
-Hard blocks on a keep: Occupied `as_company`; any auto-reject; missing steelman; density scores with no supporting incumbent rows; citing unread files.
+Hard blocks on a keep: Occupied `as_company`; any auto-reject; missing steelman; density scores with no supporting incumbent rows; citing unread files; `keep_gate: fail` ([keep-gate.md](keep-gate.md)); paraphrase quotes; five adjacent logos without the search-playbook query classes.
