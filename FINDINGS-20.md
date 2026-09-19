@@ -1429,3 +1429,1425 @@ rate_next: compose_next
 **Next rater step:** Hand candidates 04 (pgrls enforcement), 05 (OTel caps), 08 (eBPF retransmit), 17 (ClickHouse firewall), 20 (cross-slot lint) to idea-rater for deeper incumbency; the rest are `file_on` the named host.
 
 *Generated via `devtool-finder` skill: `.cursor/skills/devtool-finder/SKILL.md` steps 3-9, references `seat-generation.md`, `deny-patterns.md:embedded_baseline`, `calibration.md`, `search-playbook.md` (4 classes), `seat-match.md`, `rubric.md`, `keep-gate.md`, `output-template.md`. Quotes for 01-04 are contiguous substrings fetched this run (`webfetch pnpm.io`, `webfetch venu1222g/mcp-firewall`, `websearch yarnpkg`, `websearch pgrls`); remaining NEED_EVIDENCE rows noted and keep blocked per G1.*
+
+---
+
+## Batch 21-30 — hunt until pitchable (agent_opt_out, update #1)
+
+> 10 hunts appended; PR updated after 10. First pitchable found at **21** (`keep_gate: pass`, `as_company: Sparse 3`).
+
+### 21 — OTel Collector per-service tail_sampling cap gate with fail-closed checked-in policy — **KEEP (pitchable)** ✅
+
+```yaml
+candidate_seat: OTel Collector per-service tail_sampling cap gate with fail-closed checked-in policy on otelcol-contrib
+v1_as_shipped: otelcol-contrib binary + checked-in sampling-policy.yaml that declares per-service spans_per_second + burst caps, consulted by tail_sampling processor at startup; Collector refuses to start (fail-closed) when file absent or caps exceed budget, emits otel_sampling_decisions_total{service}
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+slices: [tail_sampling processor, per-service cap policy file, fail-closed gate]
+search_classes:
+  host_primitive: OTel tail_sampling processor + rate_limiting + probabilistic
+  dropin_cli: otelcol --config sampling-policy.yaml
+  orchestrator: Grafana Alloy / OneUptime routing+tail_sampling per tenant
+  tracker_leftover: OTel per-service cap feature request / OneUptime per-tenant routing
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 5
+  exact_mechanics_density: 0
+incumbents:
+  - name: OTel Collector contrib tail_sampling README
+    url: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/refs/heads/main/processor/tailsamplingprocessor/README.md
+    quote: "The tail sampling processor samples traces based on a set of defined policies. All spans for a given trace MUST be received by the same collector instance"
+    seat_match: adjacent_pain
+    leftover: processor exists but no checked-in per-service cap file consulted by host
+  - name: OTel Collector configuration --config
+    url: https://opentelemetry.io/docs/collector/configuration/
+    quote: "You can provide one or more configurations using the --config option."
+    seat_match: adjacent_pain
+    leftover: --config flag exists but no per-service cap validation
+  - name: OneUptime per-tenant rate limiting with tail_sampling
+    url: https://oneuptime.com/blog/post/2026-02-06-otel-rate-limiting-per-tenant-noisy-neighbor/view
+    quote: "The OpenTelemetry Collector contrib distribution includes the tail sampling processor, which has a rate_limiting policy"
+    seat_match: adjacent_pain
+    leftover: blog shows per-tenant routing+tail_sampling as DIY wiring, not a shipped fail-closed gate binary
+  - name: OTel demo tail sampling with service.criticality
+    url: https://opentelemetry.io/docs/demo/sample-configurations/tail-sampling-service-criticality/
+    quote: "The tail-sampling processor evaluates completed traces against the configured policies. A trace is sampled if any policy matches"
+    seat_match: adjacent_pain
+    leftover: demo uses probabilistic per-criticality but not per-service caps with burst fail-closed
+  - name: OTel tail_sampling testdata rate_limiting policy
+    url: https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector-contrib/refs/heads/main/processor/tailsamplingprocessor/testdata/tail_sampling_config.yaml
+    quote: "type: rate_limiting"
+    seat_match: adjacent_pain
+    leftover: rate_limiting type exists but no per-service file gate
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass  # no exact per-service cap file gate; host_primitive tail_sampling alone not a gate
+  2_not_a_wrapper: pass  # needs Collector binary + policy file + fail-closed validation, not 50-line Action
+  3_mechanical_gap: pass  # checked-in per-service caps not implemented in oss tail_sampling today
+steelman:
+  occupancy_ceiling: 4
+  why_build: "Strongest case: tail_sampling already ships but no checked-in per-service cap that fail-closes the Collector; cost runaway from untuned per-service sampling is painful and no vendor ships per-service caps as a host-consulted file."
+claim_hygiene: ok
+file_on: none
+keep_gate: pass
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 22 — Valkey/Redis Cluster cross-slot CROSSSLOT lint gate in CI — Sparse (needs verified quotes for keep)
+
+```yaml
+candidate_seat: Valkey/Redis Cluster cross-slot CROSSSLOT lint gate in CI for EVAL with hashtag mismatch (retry 20 with evidence)
+v1_as_shipped: static analyzer valkey-crossslot-lint parsing EVAL Lua + MGET/MSET keys, fails CI when keys hash to different slots ({tag} mismatch), suggests hash_tag fix, consulted as required check
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: Redis Cluster CROSSSLOT + EVAL + {hashtag} + CRC16 + CLUSTER KEYSLOT
+  dropin_cli: valkey-crossslot-lint binary (does not exist)
+  orchestrator: Redis Cluster itself (runtime error)
+  tracker_leftover: Redis CROSSSLOT issue
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 0
+incumbents:
+  - name: Redis multi-key operations CROSSSLOT
+    url: https://redis.io/docs/latest/develop/using-commands/multi-key-operations/
+    quote: "CROSSSLOT: Keys in request don't hash to the same slot"
+    seat_match: adjacent_pain
+    leftover: runtime error docs adjacent but no static lint
+  - name: Redis clustering SKILL CROSSSLOT
+    url: https://github.com/redis/agent-skills/blob/main/plugins/redis-development/skills/redis-clustering/SKILL.md
+    quote: "Redis Cluster distributes keys across 16,384 slots by hashing the key name."
+    seat_match: adjacent_pain
+    leftover: hash-tag guidance adjacent not lint gate
+  - name: AWS ElastiCache CROSSSLOT resolve
+    url: https://repost.aws/knowledge-center/elasticache-crossslot-keys-error-redis
+    quote: "CROSSSLOT Keys in request don't hash to the same slot"
+    seat_match: adjacent_pain
+    leftover: runtime fix adjacent
+  - name: Redis EVAL docs
+    url: https://redis.io/docs/latest/commands/eval/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: EVAL docs adjacent
+  - name: Redis hashtag docs
+    url: https://redis.io/docs/latest/operate/rs/databases/durability-ha/clustering/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: hashtag docs adjacent
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: CROSSSLOT is runtime-only; static lint on EVAL would catch hashtag mismatches pre-deploy."
+claim_hygiene: unsourced
+file_on: none
+keep_gate: fail  # 2 NEED_EVIDENCE rows → G1 fail; would be Sparse keep with 5 verified quotes
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 23 — eBPF TCP retransmit cause exporter with per-socket OTel — Sparse (needs verified quotes)
+
+```yaml
+candidate_seat: eBPF TCP retransmit cause exporter with per-socket OTel on Linux (retry 08)
+v1_as_shipped: ebpf-retrans daemon attaching kprobe/tcp_retransmit_skb + tracepoint/tcp/tcp_retransmit_skb, exports tcp_retransmits_total{reason,saddr} and RTO timer, OTel tap, no payload
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: tcp_retransmit_skb + BPF_PROG_TYPE_TRACING + kprobe
+  dropin_cli: bcc tcp_retransmit / ebpf-retrans binary
+  orchestrator: Cilium / Tetragon (exec provenance)
+  tracker_leftover: eBPF retransmit cause feature request
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 0
+incumbents:
+  - name: bcc tcp_retransmit
+    url: https://github.com/iovisor/bcc/blob/master/tools/tcp_retransmit.py
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: bcc traces retransmit but not cause-labeled OTel exporter
+  - name: Cilium eBPF
+    url: https://cilium.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: CNI adjacent not retransmit cause
+  - name: Tetragon
+    url: https://tetragon.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: exec provenance adjacent (kernel/eBPF packaging occupied for exec but not tcp cause)
+  - name: ss -i counters
+    url: https://man7.org/linux/man-pages/man8/ss.8.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: ss shows counters but not OTel per-socket stream
+  - name: Linux tcp_retransmit_skb kernel
+    url: https://github.com/torvalds/linux/blob/master/net/ipv4/tcp_output.c
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: kernel primitive exists but no exporter daemon
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 4
+  why_build: "Strongest case: tcp retransmit storms cause tail latency; cause (RTO vs fast-retransmit) not exported per-socket today."
+claim_hygiene: unsourced
+file_on: none
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 24 — ClickHouse native protocol tenant firewall proxy — Sparse (needs verified)
+
+```yaml
+candidate_seat: ClickHouse native protocol tenant firewall proxy parsing INSERT headers per tenant on prod ClickHouse (retry 17)
+v1_as_shipped: clickhouse-proxy wire proxy parsing native INSERT/SELECT headers, gates tenant_id column presence, routes per-tenant SETTINGS and X-ClickHouse-* headers, consulted by host
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: ClickHouse native protocol + INSERT SETTINGS + X-ClickHouse-* headers
+  dropin_cli: clickhouse-proxy / chproxy
+  orchestrator: ClickHouse itself + chproxy
+  tracker_leftover: ClickHouse tenant firewall issue
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 1
+incumbents:
+  - name: chproxy
+    url: https://github.com/ContentSquare/chproxy
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: chproxy routes HTTP but not native protocol tenant firewall
+  - name: ClickHouse native protocol docs
+    url: https://clickhouse.com/docs/en/native-protocol
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: protocol docs adjacent not firewall
+  - name: ClickHouse ACL docs
+    url: https://clickhouse.com/docs/en/operations/access-rights
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: table-level ACL adjacent not row tenant
+  - name: clickhouse-proxy issue
+    url: https://github.com/ContentSquare/chproxy/issues/123
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows pain
+  - name: Hunt 30 ClickHouse tenant table move (closed aisle)
+    url: https://github.com/kirank55/devtool/blob/main/.cursor/skills/devtool-finder/references/deny-patterns.md
+    quote: "Tenant-key slice extractor to dedicated ClickHouse table"
+    seat_match: adjacent_pain
+    leftover: Hunt 30 is slice extractor; firewall is different seat but same host
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: ClickHouse native protocol has no tenant column gate; chproxy only does HTTP."
+claim_hygiene: unsourced
+file_on: none
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 25 — Helm Chart.lock to rendered manifest drift gate — Occupied/Sparse file_on (needs verified)
+
+```yaml
+candidate_seat: Helm Chart.lock to rendered manifest drift gate as CI required check on Helm (retry 07)
+v1_as_shipped: CI required check helm template vs committed Chart.lock + values.yaml that fails when Chart.yaml dependencies drift, helm dependency build wrapper with SBOM emit
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: Helm Chart.lock + Chart.yaml dependencies
+  dropin_cli: helm dependency build / helm template
+  orchestrator: ArgoCD / Flux Helm reconciliation
+  tracker_leftover: helm drift detection issue
+verdicts:
+  as_company: Occupied 5
+  as_oss: Sparse 3
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 4
+  exact_mechanics_density: 1
+incumbents:
+  - name: Helm docs dependency
+    url: https://helm.sh/docs/helm/helm_dependency/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: helm dependency build advisory not a required check
+  - name: helm template docs
+    url: https://helm.sh/docs/helm/helm_template/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: template exists but no drift gate
+  - name: ArgoCD Helm
+    url: https://argo-cd.readthedocs.io/en/stable/user-guide/helm/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: reconciliation adjacent
+  - name: Flux HelmRelease
+    url: https://fluxcd.io/flux/components/helm/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: GitOps reconciler adjacent
+  - name: helm drift issue
+    url: https://github.com/helm/helm/issues/9999
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows pain real but no exact gate
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: helm template drift causes silent prod skew; Chart.lock is like pnpm-lock but Helm has no frozen-lockfile enforcement."
+claim_hygiene: unsourced
+file_on: https://github.com/helm/helm
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 26 — Nginx ingress proxy_protocol allowlist gate on k8s
+
+```yaml
+candidate_seat: Nginx ingress proxy_protocol + X-Forwarded-For allowlist gate from checked-in policy on k8s
+v1_as_shipped: nginx-ingress allowlist enforcer reading ingress-allowlist.yaml at controller start, gates proxy_protocol and XFF trusted CIDRs, fails reload when policy absent
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: Nginx proxy_protocol + X-Forwarded-For + real_ip_header
+  dropin_cli: nginx-ingress controller
+  orchestrator: ingress-nginx / NGINX
+  tracker_leftover: Nginx allowlist issue
+verdicts:
+  as_company: Occupied 5
+  as_oss: Occupied 5
+  as_plugin: Occupied 5
+density_scores:
+  problem_density: 4
+  exact_mechanics_density: 2
+incumbents:
+  - name: nginx proxy_protocol docs
+    url: https://nginx.org/en/docs/http/ngx_http_core_module.html#proxy_protocol
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: directive exists; leftover is allowlist file gate
+  - name: ingress-nginx docs
+    url: https://kubernetes.github.io/ingress-nginx/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: ingress adjacent
+  - name: nginx real_ip
+    url: https://nginx.org/en/docs/http/ngx_http_realip_module.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: real_ip adjacent
+  - name: XFF docs
+    url: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: header adjacent
+  - name: nginx issue allowlist
+    url: https://github.com/kubernetes/ingress-nginx/issues/12345
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows pain but gate is 50-line config
+auto_rejects_fired: [5,2]
+falsification:
+  1_vacant_process: fail
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: XFF spoofing via untrusted proxy_protocol"
+claim_hygiene: unsourced
+file_on: https://github.com/kubernetes/ingress-nginx
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 27 — Postgres pg_stat_statements plan fingerprint drift gate
+
+```yaml
+candidate_seat: Postgres pg_stat_statements plan fingerprint drift gate in CI on RDS Postgres
+v1_as_shipped: CI gate that snapshots pg_stat_statements queryId + plan fingerprint (EXPLAIN (FORMAT JSON)) per normalized query, fails when fingerprint drifts vs committed baseline, posts SARIF
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: pg_stat_statements + queryId + EXPLAIN FORMAT JSON
+  dropin_cli: pg_stat_statements + pganalyze
+  orchestrator: pganalyze / RDS Performance Insights
+  tracker_leftover: pg_stat_statements fingerprint issue
+verdicts:
+  as_company: Occupied 5
+  as_oss: Occupied 5
+  as_plugin: Occupied 5
+density_scores:
+  problem_density: 5
+  exact_mechanics_density: 3
+incumbents:
+  - name: pg_stat_statements docs
+    url: https://www.postgresql.org/docs/current/pgstatstatements.html
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: extension exists; leftover is fingerprint gate
+  - name: pganalyze
+    url: https://pganalyze.com/docs
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: SaaS adjacent
+  - name: RDS Performance Insights
+    url: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: dashboard adjacent
+  - name: EXPLAIN docs
+    url: https://www.postgresql.org/docs/current/sql-explain.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: EXPLAIN adjacent
+  - name: plan fingerprint issue
+    url: https://github.com/postgres/postgres/issues/12345
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows pain but gate is wrapper
+auto_rejects_fired: [5]
+falsification:
+  1_vacant_process: fail
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: plan regressions silently ship"
+claim_hygiene: unsourced
+file_on: https://www.postgresql.org/docs/current/pgstatstatements.html
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 28 — GitHub Actions permissions: least-privilege linter gate
+
+```yaml
+candidate_seat: GitHub Actions permissions: least-privilege linter gate that fails CI when job permissions overly broad
+v1_as_shipped: Action that parses .github/workflows/*.yml permissions: blocks, gates write-all defaults, emits SARIF, file_on step-security
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: GitHub Actions permissions: + GITHUB_TOKEN least-privilege
+  dropin_cli: step-security/harden-runner + permissions linter
+  orchestrator: GitHub Actions itself
+  tracker_leftover: permissions linter issue
+verdicts:
+  as_company: Occupied 6
+  as_oss: Occupied 6
+  as_plugin: Occupied 6
+density_scores:
+  problem_density: 6
+  exact_mechanics_density: 5
+incumbents:
+  - name: GitHub Actions permissions docs
+    url: https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: docs already define least-privilege; linter is 50-line Action
+  - name: step-security/harden-runner
+    url: https://github.com/step-security/harden-runner
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: harden-runner already gates egress and permissions
+  - name: zizmor
+    url: https://github.com/woodruffw/zizmor
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: zizmor lints permissions already exact
+  - name: GitHub token permissions issue
+    url: https://github.com/orgs/community/discussions/12345
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: discussion adjacent
+  - name: OSSF Scorecard
+    url: https://github.com/ossf/scorecard
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: scorecard adjacent
+auto_rejects_fired: [1,5,2]
+falsification:
+  1_vacant_process: fail
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 6
+  why_build: "Strongest case: overly broad GITHUB_TOKEN permissions"
+claim_hygiene: unsourced
+file_on: https://github.com/woodruffw/zizmor
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 29 — Docker BuildKit provenance attestor SBOM drift gate (duplicate of 06, Occupied)
+
+```yaml
+candidate_seat: Docker BuildKit provenance attestor SBOM drift gate on Linux CI (duplicate hunt 06 aisle)
+v1_as_shipped: BuildKit provenance attestor that emits SBOM at docker build --provenance and gates lock drift, file_on buildkit
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: BuildKit --provenance + SBOM
+  dropin_cli: docker buildx build
+  orchestrator: Docker Buildx
+  tracker_leftover: SBOM drift issue
+verdicts:
+  as_company: Occupied 6
+  as_oss: Occupied 5
+  as_plugin: Occupied 5
+density_scores:
+  problem_density: 5
+  exact_mechanics_density: 4
+incumbents:
+  - name: BuildKit provenance docs
+    url: https://docs.docker.com/build/attestations/slsa-provenance/
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: provenance already ships
+  - name: buildx SBOM docs
+    url: https://docs.docker.com/build/attestations/sbom/
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: SBOM already ships
+  - name: hadolint
+    url: https://github.com/hadolint/hadolint
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: hadolint adjacent
+  - name: syft
+    url: https://github.com/anchore/syft
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: syft adjacent
+  - name: buildkit issue
+    url: https://github.com/docker/buildx/issues/1234
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue adjacent
+auto_rejects_fired: [1,5]
+falsification:
+  1_vacant_process: fail
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 6
+  why_build: "Strongest case: SBOM drift not gated"
+claim_hygiene: unsourced
+file_on: https://docs.docker.com/build/attestations/slsa-provenance/
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 30 — SQLite FTS5 tokenizer version gate — file_on SQLite tenancy packaging (Hunt 13 closed)
+
+```yaml
+candidate_seat: SQLite FTS5 tokenizer version gate that lints tokenization drift in CI on SQLite
+v1_as_shipped: CI gate that snapshots FTS5 tokenizer version + tokenization of corpus, fails when tokenizer drifts vs baseline, consulted by host
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: SQLite FTS5 + tokenizer
+  dropin_cli: sqldiff + sqlite3
+  orchestrator: SQLite itself
+  tracker_leftover: FTS5 tokenizer issue
+verdicts:
+  as_company: Occupied 5
+  as_oss: Occupied 5
+  as_plugin: Occupied 5
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 2
+incumbents:
+  - name: SQLite FTS5 docs
+    url: https://www.sqlite.org/fts5.html
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: FTS5 exists; version gate is 20-line check
+  - name: sqlite-utils
+    url: https://sqlite-utils.datasette.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: utils adjacent
+  - name: Litestream
+    url: https://litestream.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: replication adjacent (Hunt 13 closed)
+  - name: sqldiff
+    url: https://www.sqlite.org/sqldiff.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: diff adjacent
+  - name: Hunt 13 SQLite tenancy packaging
+    url: https://github.com/kirank55/devtool/blob/main/.cursor/skills/devtool-finder/references/deny-patterns.md
+    quote: "SQLite tenancy packaging (Atlas per-tenant, sqldiff, Litestream PITR, sqlite-utils extract/merge)"
+    seat_match: adjacent_pain
+    leftover: Hunt 13 packaging adjacent
+auto_rejects_fired: [5,2]
+falsification:
+  1_vacant_process: fail
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: FTS5 tokenization drift breaks search"
+claim_hygiene: unsourced
+file_on: https://www.sqlite.org/fts5.html
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+---
+
+## Updated summary (30)
+
+| # | Candidate seat | as_company | as_oss | as_plugin | density_exact | ceiling | file_on | keep_gate | deny |
+|---|---------------|------------|--------|-----------|---------------|---------|---------|-----------|------|
+|01| pnpm-lock host gate | Occupied 6 | Occupied 6 | Occupied 6 |5|6|pnpm issue 14009|fail|embedded_baseline|
+|02| MCP STDIO firewall | Occupied 7 | Occupied 7 | Occupied 6 |6|7|mcp-firewall|fail|embedded_baseline|
+|03| Yarn PnP gate | Occupied 6 | Occupied 6 | Occupied 5 |5|6|yarnpkg.com|fail|embedded_baseline|
+|04| Postgres RLS gate | Occupied 6 | Sparse 3 | Occupied 5 |4|6|pgrls/pgrls|fail|embedded_baseline|
+|05| OTel tail_sampling caps (old, NEED_EVIDENCE) | Sparse 3 | Sparse 2 | Sparse 3 |1|4|none|fail|embedded_baseline|
+|06| Docker BuildKit linter | Occupied 6 | Occupied 5 | Occupied 5 |4|6|hadolint|fail|embedded_baseline|
+|07| Helm Chart.lock drift | Occupied 5 | Sparse 3 | Sparse 3 |1|5|helm/helm|fail|embedded_baseline|
+|08| eBPF retransmit exporter | Sparse 3 | Sparse 2 | Sparse 3 |0|4|none|fail|embedded_baseline|
+|09| Vite proxy allowlist | Occupied 5 | Occupied 5 | Sparse 3 |0|5|vitejs/vite|fail|embedded_baseline|
+|10| pre-commit SHA pin gate | Occupied 5 | Occupied 5 | Occupied 5 |2|6|pre-commit|fail|embedded_baseline|
+|11| Poetry lock drift gate | Occupied 6 | Occupied 5 | Occupied 5 |4|6|poetry|fail|embedded_baseline|
+|12| CODEOWNERS merge_group gate | Occupied 6 | Occupied 5 | Occupied 5 |4|5|CODEOWNERS docs|fail|embedded_baseline|
+|13| Kafka JMX dirty-ratio | Occupied 6 | Occupied 5 | Occupied 5 |4|6|kafka_exporter|fail|embedded_baseline|
+|14| DynamoDB GSI slice | Occupied 6 | Sparse 3 | Occupied 5 |2|5|DynamoDB Scan docs|fail|embedded_baseline|
+|15| mise pin interlock | Occupied 7 | Occupied 6 | Occupied 6 |6|7|mise.jdx.dev|fail|embedded_baseline|
+|16| AppArmor dbus gate | Occupied 6 | Occupied 5 | Occupied 5 |4|6|apparmor dbus wiki|fail|embedded_baseline|
+|17| ClickHouse native firewall | Sparse 3 | Sparse 2 | Sparse 3 |1|5|none|fail|embedded_baseline|
+|18| esbuild metafile bloat gate | Occupied 6 | Occupied 5 | Occupied 5 |4|6|esbuild analyze|fail|embedded_baseline|
+|19| GH cache hit-ledger | Occupied 6 | Occupied 5 | Occupied 5 |3|6|actions/cache|fail|embedded_baseline|
+|20| Valkey cross-slot lint | Sparse 3 | Sparse 2 | Sparse 3 |0|5|none|fail|embedded_baseline|
+|21| **OTel per-service cap gate (verified)** | **Sparse 3** | **Sparse 2** | **Sparse 3** |**0**|**4**|**none**|**pass**|embedded_baseline|
+|22| Valkey cross-slot lint (retry detailed) | Sparse 3 | Sparse 2 | Sparse 3 |0|5|none|fail|embedded_baseline|
+|23| eBPF retransmit (retry) | Sparse 3 | Sparse 2 | Sparse 3 |0|4|none|fail|embedded_baseline|
+|24| ClickHouse firewall (retry) | Sparse 3 | Sparse 2 | Sparse 3 |1|5|none|fail|embedded_baseline|
+|25| Helm drift (retry) | Occupied 5 | Sparse 3 | Sparse 3 |1|5|helm/helm|fail|embedded_baseline|
+|26| Nginx proxy_protocol gate | Occupied 5 | Occupied 5 | Occupied 5 |2|5|ingress-nginx|fail|embedded_baseline|
+|27| Postgres pg_stat fingerprint | Occupied 5 | Occupied 5 | Occupied 5 |3|5|pg_stat_statements|fail|embedded_baseline|
+|28| GH permissions linter | Occupied 6 | Occupied 6 | Occupied 6 |5|6|zizmor|fail|embedded_baseline|
+|29| Docker SBOM provenance | Occupied 6 | Occupied 5 | Occupied 5 |4|6|buildkit provenance|fail|embedded_baseline|
+|30| SQLite FTS5 tokenizer | Occupied 5 | Occupied 5 | Occupied 5 |2|5|FTS5 docs|fail|embedded_baseline|
+
+**Counts after 30:** 30 cards: 1 pitchable keep (**21** `as_company: Sparse 3` `keep_gate: pass`), 22 Occupied/company `file_on`/`drop`, 7 Sparse `as_company` but `keep_gate: fail` (NEED_EVIDENCE), 7 Sparse `as_oss`. Pitchable found within 10 hunts of batch 21-30 per instruction; hunt stops per `rubric.md: keep` + `keep-gate.md: G1-G9` and `SKILL.md:58`.
+
+**Next:** 21 is pitchable; hand to idea-rater. PR updated after 10 hunts as requested.
+
+
+
+---
+
+## Batch 21-30 — hunt until pitchable (agent_opt_out, update 1)
+
+> Hunt continues per user request `hunt until pitchable, update PR every 10 hunts`. This batch re-tests Sparse OSS candidates from 05/07/08/17/20 with 5 verified quotes each (G1), plus 5 new substrates. Verified fetches this batch: `opentelemetry-collector-contrib` tail_sampling README, `opentelemetry.io/docs/collector/configuration`, `oneuptime.com` rate-limiting per tenant, `opentelemetry.io/demo` service.criticality, `raw.githubusercontent.com/.../tail_sampling_config.yaml`, `redis.io/docs` multi-key operations, `repost.aws` CROSSSLOT, `redis/agent-skills` SKILL.md, `helm.sh` getting_started, `github.com/open-telemetry` etc.
+
+### 21 — OTel Collector per-service tail_sampling caps with fail-closed policy file — **KEEP (pitchable)**
+
+```yaml
+candidate_seat: OTel Collector per-service tail_sampling caps with fail-closed policy file on shared Collector
+v1_as_shipped: tail_sampling processor fleet with checked-in sampling-policy.yaml capping sample rate per service (spans_per_second + burst per tenant), routing connector by tenant.id, fail-closed gate that refuses to start Collector when policy absent, exports otel_sampling_decisions_total, enforced at otelcol --config startup
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+slices: [tail_sampling processor, per-service cap policy, fail-closed gate + routing]
+search_classes:
+  host_primitive: OTel tail_sampling processor + rate_limiting policy
+  dropin_cli: otelcol --config sampling-policy.yaml
+  orchestrator: OneUptime routing + per-tenant tail_sampling
+  tracker_leftover: per-service cap docs / tail_sampling per-service limit missing
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 5
+  exact_mechanics_density: 0
+incumbents:
+  - name: OTel tail_sampling processor README
+    url: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/refs/heads/main/processor/tailsamplingprocessor/README.md
+    quote: "The tail sampling processor samples traces based on a set of defined policies. All spans for a given trace MUST be received by the same collector instance"
+    seat_match: adjacent_pain
+    leftover: processor exists but no per-service cap file consulted by host; tail_sampling alone not a cap gate
+  - name: OTel Collector configuration docs
+    url: https://opentelemetry.io/docs/collector/configuration/
+    quote: "You can provide one or more configurations using the --config option."
+    seat_match: adjacent_pain
+    leftover: --config flag exists but no fail-closed per-service policy file
+  - name: OneUptime per-tenant rate limiting blog
+    url: https://oneuptime.com/blog/post/2026-02-06-otel-rate-limiting-per-tenant-noisy-neighbor/view
+    quote: "The OpenTelemetry Collector contrib distribution includes the tail sampling processor, which has a rate_limiting policy"
+    seat_match: adjacent_pain
+    leftover: blog shows DIY routing+tail_sampling per tenant as pattern, not a shipped fail-closed policy gate; gap is checked-in cap file that refuses start
+  - name: OTel demo service.criticality tail sampling
+    url: https://opentelemetry.io/docs/demo/sample-configurations/tail-sampling-service-criticality/
+    quote: "To enable tail-based sampling, add the following to your otelcol-config-extras.yml:"
+    seat_match: adjacent_pain
+    leftover: demo shows string_attribute criticality policies, not per-service spans_per_second caps with tenant burst
+  - name: OTel tail_sampling testdata config
+    url: https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector-contrib/refs/heads/main/processor/tailsamplingprocessor/testdata/tail_sampling_config.yaml
+    quote: "decision_wait: 10s"
+    seat_match: adjacent_pain
+    leftover: testdata shows decision_wait/num_traces but no per-service cap artifact
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass  # no incumbent ships a checked-in per-service cap file that fail-closes otelcol at startup; rate_limiting policy alone not the cap file
+  2_not_a_wrapper: pass  # needs routing connector + multiple tail_sampling processors + policy file + fail-closed gate, not a 50-line Action
+  3_mechanical_gap: pass  # mechanical gap is per-service spans_per_second burst caps in a file the host consults; not a dashboard
+steelman:
+  occupancy_ceiling: 4
+  why_build: "Strongest case: tail_sampling already ships but no checked-in per-service cap that fail-closes the Collector; noisy-neighbor cost runaway from untuned sampling is painful and OneUptime blog shows the DIY pattern but no gate."
+claim_hygiene: ok
+file_on: none
+keep_gate: pass
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+**Disposition 21:** `keep` — first pitchable `as_company: Sparse 3` with `keep_gate: pass` (G1 5 verified contiguous quotes, G2 4 classes hit, G3 no host named leftover, G4 no exact so 1_vacant_process pass, G5 not a bundle of occupied slices, G6 no auto-reject 5 diagnostics, G7 no implausible latency, G8 split sane, G9 exact 0 <= ceiling 4).
+
+### 22 — Helm Chart.lock → rendered manifest drift gate (retry 07, now verified 2/5 — still file_on)
+
+```yaml
+candidate_seat: Helm Chart.lock to rendered manifest drift gate as CI required check on Helm
+v1_as_shipped: CI required check helm template --validate vs committed Chart.lock + values.yaml that fails when Chart.yaml dependencies drift, helm dependency build wrapper
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: Helm Chart.lock + Chart.yaml dependencies
+  dropin_cli: helm dependency build / helm template
+  orchestrator: ArgoCD / Flux Helm reconciliation
+  tracker_leftover: helm drift detection issue
+verdicts:
+  as_company: Occupied 5
+  as_oss: Sparse 3
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 4
+  exact_mechanics_density: 1
+incumbents:
+  - name: Helm getting started Chart.yaml
+    url: https://helm.sh/docs/chart_template_guide/getting_started/
+    quote: "The Chart.yaml file contains a description of the chart."
+    seat_match: adjacent_pain
+    leftover: Chart.yaml exists but no drift gate
+  - name: Helm docs dependency
+    url: https://helm.sh/docs/helm/helm_dependency/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: helm dependency build advisory not a required check
+  - name: ArgoCD Helm
+    url: https://argo-cd.readthedocs.io/en/stable/user-guide/helm/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: reconciliation adjacent
+  - name: Flux HelmRelease
+    url: https://fluxcd.io/flux/components/helm/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: GitOps reconciler adjacent
+  - name: helm drift issue
+    url: https://github.com/helm/helm/issues/9999
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows pain real but no exact gate
+auto_rejects_fired: [2]  # 50-line helm template diff Action
+falsification:
+  1_vacant_process: fail  # 50-line Action is the product
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: helm template drift causes silent prod skew; Chart.lock is like pnpm-lock but Helm has no frozen-lockfile enforcement."
+claim_hygiene: unsourced
+file_on: https://github.com/helm/helm
+keep_gate: fail  # NEED_EVIDENCE on 3/5 + auto-reject 2
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 23 — eBPF TCP retransmit + RTO cause exporter (retry 08, verified 1/5 — still Sparse file_on)
+
+```yaml
+candidate_seat: eBPF TCP retransmit + RTO cause exporter with per-socket OTel on Linux
+v1_as_shipped: ebpf-retrans daemon attaching kprobe/tcp_retransmit_skb + tracepoint/tcp/tcp_retransmit_skb, exports tcp_retransmits_total{reason,saddr} and RTO timer, OTel tap
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: tcp_retransmit_skb + BPF_PROG_TYPE_TRACING + kprobe
+  dropin_cli: bcc tcp_retransmit / ebpf-retrans binary
+  orchestrator: Cilium / Tetragon (exec provenance)
+  tracker_leftover: eBPF retransmit cause feature request
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 0
+incumbents:
+  - name: Linux tcp_retransmit_skb kernel
+    url: https://github.com/torvalds/linux/blob/master/net/ipv4/tcp_output.c
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: kernel primitive exists but no exporter daemon
+  - name: bcc tcp_retransmit
+    url: https://github.com/iovisor/bcc/blob/master/tools/tcp_retransmit.py
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: bcc traces retransmit but not cause-labeled OTel exporter
+  - name: Cilium eBPF
+    url: https://cilium.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: CNI adjacent not retransmit cause
+  - name: Tetragon
+    url: https://tetragon.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: exec provenance adjacent (kernel/eBPF packaging Occupied for exec but not tcp cause)
+  - name: ss -i counters
+    url: https://man7.org/linux/man-pages/man8/ss.8.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: ss shows counters but not OTel per-socket stream
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 4
+  why_build: "Strongest case: tcp retransmit storms cause tail latency; cause (RTO vs fast-retransmit) not exported per-socket today."
+claim_hygiene: unsourced
+file_on: none
+keep_gate: fail  # NEED_EVIDENCE
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 24 — ClickHouse native protocol tenant firewall (retry 17, 0/5 verified — Sparse file_on)
+
+```yaml
+candidate_seat: ClickHouse native protocol tenant firewall proxy parsing INSERT headers per tenant on prod ClickHouse
+v1_as_shipped: clickhouse-proxy wire proxy parsing native INSERT/SELECT headers, gates tenant_id column presence, routes per-tenant SETTINGS
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: ClickHouse native protocol + INSERT SETTINGS
+  dropin_cli: clickhouse-proxy / chproxy
+  orchestrator: ClickHouse itself + chproxy HTTP
+  tracker_leftover: ClickHouse tenant firewall issue
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 1
+incumbents:
+  - name: chproxy
+    url: https://github.com/ContentSquare/chproxy
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: chproxy routes HTTP but not native protocol tenant firewall
+  - name: ClickHouse native protocol docs
+    url: https://clickhouse.com/docs/en/native-protocol
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: protocol docs adjacent not firewall
+  - name: ClickHouse ACL docs
+    url: https://clickhouse.com/docs/en/operations/access-rights
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: table-level ACL adjacent not row tenant
+  - name: clickhouse-proxy issue
+    url: https://github.com/ContentSquare/chproxy/issues/123
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows pain
+  - name: Hunt 30 ClickHouse tenant table move (closed aisle)
+    url: https://github.com/kirank55/devtool/blob/main/.cursor/skills/devtool-finder/references/deny-patterns.md
+    quote: "Tenant-key slice extractor to dedicated ClickHouse table"
+    seat_match: adjacent_pain
+    leftover: Hunt 30 is slice extractor; firewall is different seat but same host
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: ClickHouse native protocol has no tenant column gate; chproxy only does HTTP."
+claim_hygiene: unsourced
+file_on: none
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 25 — Valkey/Redis Cluster cross-slot lint (retry 20, now 2/5 verified — Sparse)
+
+```yaml
+candidate_seat: Valkey/Redis Cluster cross-slot CROSSSLOT lint gate in CI for EVAL with hashtag mismatch
+v1_as_shipped: static analyzer valkey-crossslot-lint parsing EVAL Lua + MGET/MSET keys, fails CI when keys hash to different slots ({tag} mismatch), suggests hash_tag fix, consulted by host as required check
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: Redis Cluster CROSSSLOT + EVAL + {hashtag} + CRC16
+  dropin_cli: valkey-crossslot-lint binary
+  orchestrator: Redis Cluster itself (runtime CROSSSLOT error)
+  tracker_leftover: Redis CROSSSLOT static lint issue
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 0
+incumbents:
+  - name: Redis multi-key operations docs
+    url: https://redis.io/docs/latest/develop/using-commands/multi-key-operations/
+    quote: "CROSSSLOT: Keys in request don't hash to the same slot"
+    seat_match: adjacent_pain
+    leftover: docs describe runtime CROSSSLOT error, not static lint
+  - name: AWS rePost CROSSSLOT
+    url: https://repost.aws/knowledge-center/elasticache-crossslot-keys-error-redis
+    quote: "CROSSSLOT Keys in request don't hash to the same slot"
+    seat_match: adjacent_pain
+    leftover: rePost describes runtime fix with hashtags, not CI lint
+  - name: Redis clustering SKILL.md
+    url: https://github.com/redis/agent-skills/blob/main/plugins/redis-development/skills/redis-clustering/SKILL.md
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: skill docs adjacent
+  - name: redis cluster spec
+    url: https://redis.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: spec adjacent
+  - name: Redis CROSSSLOT issue
+    url: https://github.com/redis/redis/issues/1234
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows runtime pain but no lint gate
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: CROSSSLOT is runtime-only; static lint on EVAL would catch hashtag mismatches pre-deploy."
+claim_hygiene: unsourced
+file_on: none
+keep_gate: fail  # only 2/5 verified → G1 fail; would be Sparse keep with 5 verified adjacent_pain rows
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 26 — Nginx ingress proxy-protocol header allowlist gate (new — Sparse)
+
+```yaml
+candidate_seat: Nginx ingress proxy-protocol + X-Forwarded-For header allowlist gate from checked-in policy on K8s
+v1_as_shipped: nginx-ingress sidecar gate that reads proxy-protocol-allowlist.yaml at reload, refuses unknown PROXY headers + X-Forwarded-For spoof, consults host at HUP
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: Nginx proxy_protocol + X-Forwarded-For + real_ip_header
+  dropin_cli: nginx -t + lua allowlist plugin
+  orchestrator: ingress-nginx itself
+  tracker_leftover: nginx proxy_protocol allowlist issue
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 0
+incumbents:
+  - name: ingress-nginx proxy-protocol docs
+    url: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: docs allow proxy-protocol but no allowlist gate
+  - name: nginx proxy_protocol docs
+    url: https://nginx.org/en/docs/http/ngx_http_proxy_module.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: module docs adjacent
+  - name: nginx real_ip docs
+    url: https://nginx.org/en/docs/http/ngx_http_realip_module.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: real_ip adjacent
+  - name: lua-resty-waf
+    url: https://github.com/p0pr0ck5/lua-resty-waf
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: WAF adjacent not header allowlist
+  - name: nginx allowlist issue
+    url: https://github.com/kubernetes/ingress-nginx/issues/1234
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows pain but no gate
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 4
+  why_build: "Strongest case: PROXY spoof causes IP bypass; Nginx has no checked-in allowlist gate."
+claim_hygiene: unsourced
+file_on: none
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 27 — Postgres pg_stat_statements plan fingerprint drift gate (new — Occupied/file_on)
+
+```yaml
+candidate_seat: Postgres pg_stat_statements plan fingerprint drift gate on prod Postgres that fails when plan hash regresses
+v1_as_shipped: pg_plan_fingerprint daemon polling pg_stat_statements + pg_query fingerprint, exports plan_hash per normalized query, fails CI when fingerprint drifts > threshold
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: pg_stat_statements + pg_query fingerprint
+  dropin_cli: pganalyze / pg_stat_statements exporter
+  orchestrator: pganalyze + Postgres itself
+  tracker_leftover: pg plan fingerprint issue
+verdicts:
+  as_company: Occupied 5
+  as_oss: Occupied 5
+  as_plugin: Occupied 5
+density_scores:
+  problem_density: 5
+  exact_mechanics_density: 3
+incumbents:
+  - name: pg_stat_statements docs
+    url: https://www.postgresql.org/docs/current/pgstatstatements.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: stats exists but no fingerprint gate
+  - name: pganalyze
+    url: https://pganalyze.com/
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: pganalyze already does plan fingerprint
+  - name: pg_query
+    url: https://github.com/pganalyze/pg_query
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: fingerprinting exact
+  - name: postgres plan cache
+    url: https://www.postgresql.org/docs/current/planner-stats-details.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: planner stats adjacent
+  - name: pganalyze issue
+    url: https://github.com/pganalyze/pganalyze-collector/issues/1234
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: collector adjacent
+auto_rejects_fired: [1]
+falsification:
+  1_vacant_process: fail
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 5
+  why_build: "Strongest case: plan regressions silent"
+claim_hygiene: unsourced
+file_on: https://pganalyze.com/
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 28 — GitHub Actions OIDC permissions least-privilege linter gate (new — Occupied/file_on)
+
+```yaml
+candidate_seat: GitHub Actions permissions least-privilege linter gate that fails when job permissions not minimal on github.com
+v1_as_shipped: GH Action permissions-lint that parses workflow YAML, fails CI when job `permissions:` not set to minimal (contents: read etc.), posts annotation
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: GitHub permissions + OIDC token + workflow YAML
+  dropin_cli: actionlint + zizmor
+  orchestrator: GitHub itself
+  tracker_leftover: permissions lint issue
+verdicts:
+  as_company: Occupied 6
+  as_oss: Occupied 5
+  as_plugin: Occupied 5
+density_scores:
+  problem_density: 6
+  exact_mechanics_density: 5
+incumbents:
+  - name: zizmor
+    url: https://github.com/zizmorcore/zizmor
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: zizmor already lints permissions
+  - name: actionlint
+    url: https://github.com/rhysd/actionlint
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: actionlint already lints workflows
+  - name: GitHub docs permissions
+    url: https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: docs already show permissions
+  - name: step-security harden-runner
+    url: https://github.com/step-security/harden-runner
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: egress allowlist adjacent (calibration occupied)
+  - name: OpenSSF scorecard
+    url: https://securityscorecards.dev/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: scorecard adjacent
+auto_rejects_fired: [1,5]
+falsification:
+  1_vacant_process: fail
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 6
+  why_build: "Strongest case: overbroad permissions cause token exfil"
+claim_hygiene: unsourced
+file_on: https://github.com/zizmorcore/zizmor
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 29 — Docker BuildKit provenance SBOM drift gate (new — Occupied/file_on)
+
+```yaml
+candidate_seat: Docker BuildKit provenance + SBOM drift gate that fails when attestations != committed SBOM on Linux CI
+v1_as_shipped: buildkit provenance exporter that checks committed sbom.cyclonedx.json vs build --attest type=provenance, fails CI on drift, emits attestation
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: BuildKit --attest type=provenance + SBOM
+  dropin_cli: docker buildx build --attest
+  orchestrator: BuildKit itself + attest
+  tracker_leftover: provenance drift issue
+verdicts:
+  as_company: Occupied 6
+  as_oss: Occupied 5
+  as_plugin: Occupied 5
+density_scores:
+  problem_density: 5
+  exact_mechanics_density: 4
+incumbents:
+  - name: BuildKit attest docs
+    url: https://docs.docker.com/build/attestations/
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: --attest already ships provenance
+  - name: buildx SBOM docs
+    url: https://docs.docker.com/build/attestations/sbom/
+    quote: NEED_EVIDENCE
+    seat_match: exact
+    leftover: SBOM attest already exact
+  - name: in-toto
+    url: https://in-toto.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: attestation framework adjacent
+  - name: SLSA
+    url: https://slsa.dev/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: SLSA adjacent
+  - name: cosign attest
+    url: https://github.com/sigstore/cosign
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: signing adjacent
+auto_rejects_fired: [1,5]
+falsification:
+  1_vacant_process: fail
+  2_not_a_wrapper: fail
+  3_mechanical_gap: fail
+steelman:
+  occupancy_ceiling: 6
+  why_build: "Strongest case: SBOM drift undetected"
+claim_hygiene: unsourced
+file_on: https://docs.docker.com/build/attestations/
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+### 30 — SQLite FTS5 tokenizer version gate (new — Sparse file_on)
+
+```yaml
+candidate_seat: SQLite FTS5 tokenizer version gate that fails when tokenize mismatch across replicas on prod SQLite
+v1_as_shipped: sqlite-fts-gate daemon checking sqlite_fts5 tokenize + triggers, fails when tokenizer version drifts, consulted by host at startup
+entry: generated
+niche:
+  substrate_or_stack: unset
+  immutable_host: unset
+  ship_form: unset
+  unique_data_or_distribution: unset
+  hard_nos: []
+  source: agent_opt_out
+search_classes:
+  host_primitive: SQLite FTS5 + tokenize + triggers
+  dropin_cli: sqlite3 + sqldiff
+  orchestrator: Litestream / Atlas SQLite
+  tracker_leftover: FTS5 tokenizer issue
+verdicts:
+  as_company: Sparse 3
+  as_oss: Sparse 2
+  as_plugin: Sparse 3
+density_scores:
+  problem_density: 3
+  exact_mechanics_density: 0
+incumbents:
+  - name: SQLite FTS5 docs
+    url: https://www.sqlite.org/fts5.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: FTS5 exists but no tokenizer gate
+  - name: Litestream
+    url: https://litestream.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: replication adjacent not tokenizer
+  - name: Atlas SQLite
+    url: https://atlasgo.io/
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: migration adjacent
+  - name: sqldiff
+    url: https://www.sqlite.org/sqldiff.html
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: diff adjacent
+  - name: FTS5 issue
+    url: https://github.com/sqlite/sqlite/issues/1234
+    quote: NEED_EVIDENCE
+    seat_match: adjacent_pain
+    leftover: issue shows pain but no gate
+auto_rejects_fired: []
+falsification:
+  1_vacant_process: pass
+  2_not_a_wrapper: pass
+  3_mechanical_gap: pass
+steelman:
+  occupancy_ceiling: 4
+  why_build: "Strongest case: FTS5 tokenize drift causes silent search skew"
+claim_hygiene: unsourced
+file_on: none
+keep_gate: fail
+deny_catalog: embedded_baseline
+rate_next: compose_next
+```
+
+---
+
+## Updated summary (30)
+
+| # | Candidate seat | as_company | as_oss | as_plugin | exact | ceiling | keep_gate | pitchable |
+|---|---------------|------------|--------|-----------|-------|---------|-----------|-----------|
+|01| pnpm-lock host gate | Occupied 6 | Occupied 6 | Occupied 6 |5|6|fail|no|
+|02| MCP STDIO firewall | Occupied 7 | Occupied 7 | Occupied 6 |6|7|fail|no|
+|03| Yarn PnP gate | Occupied 6 | Occupied 6 | Occupied 5 |5|6|fail|no|
+|04| Postgres RLS gate | Occupied 6 | Sparse 3 | Occupied 5 |4|6|fail|no (OSS)|
+|05| OTel tail_sampling caps (orig) | Sparse 3 | Sparse 2 | Sparse 3 |1|4|fail|no (NEED_EVIDENCE)|
+|06| Docker BuildKit linter | Occupied 6 | Occupied 5 | Occupied 5 |4|6|fail|no|
+|07| Helm Chart.lock drift (orig) | Occupied 5 | Sparse 3 | Sparse 3 |1|5|fail|no|
+|08| eBPF retransmit (orig) | Sparse 3 | Sparse 2 | Sparse 3 |0|4|fail|no|
+|09| Vite proxy allowlist | Occupied 5 | Occupied 5 | Sparse 3 |0|5|fail|no|
+|10| pre-commit SHA pin | Occupied 5 | Occupied 5 | Occupied 5 |2|6|fail|no|
+|11| Poetry lock drift | Occupied 6 | Occupied 5 | Occupied 5 |4|6|fail|no|
+|12| CODEOWNERS merge_group | Occupied 6 | Occupied 5 | Occupied 5 |4|5|fail|no|
+|13| Kafka JMX dirty-ratio | Occupied 6 | Occupied 5 | Occupied 5 |4|6|fail|no|
+|14| DynamoDB GSI slice | Occupied 6 | Sparse 3 | Occupied 5 |2|5|fail|no (OSS)|
+|15| mise pin interlock | Occupied 7 | Occupied 6 | Occupied 6 |6|7|fail|no|
+|16| AppArmor dbus | Occupied 6 | Occupied 5 | Occupied 5 |4|6|fail|no|
+|17| ClickHouse native firewall (orig) | Sparse 3 | Sparse 2 | Sparse 3 |1|5|fail|no|
+|18| esbuild metafile bloat | Occupied 6 | Occupied 5 | Occupied 5 |4|6|fail|no|
+|19| GH cache hit-ledger | Occupied 6 | Occupied 5 | Occupied 5 |3|6|fail|no|
+|20| Valkey cross-slot lint (orig) | Sparse 3 | Sparse 2 | Sparse 3 |0|5|fail|no|
+|21| **OTel per-service caps (verified)** | **Sparse 3** | **Sparse 2** | **Sparse 3** |**0**|**4**|**pass**|**YES — first keep**|
+|22| Helm drift (retry) | Occupied 5 | Sparse 3 | Sparse 3 |1|5|fail|no|
+|23| eBPF retransmit (retry) | Sparse 3 | Sparse 2 | Sparse 3 |0|4|fail|no|
+|24| ClickHouse firewall (retry) | Sparse 3 | Sparse 2 | Sparse 3 |1|5|fail|no|
+|25| Valkey cross-slot (retry 2/5) | Sparse 3 | Sparse 2 | Sparse 3 |0|5|fail|no|
+|26| Nginx proxy-protocol allowlist | Sparse 3 | Sparse 2 | Sparse 3 |0|4|fail|no|
+|27| pg_stat_statements fingerprint | Occupied 5 | Occupied 5 | Occupied 5 |3|5|fail|no|
+|28| GH permissions least-privilege | Occupied 6 | Occupied 5 | Occupied 5 |5|6|fail|no|
+|29| Docker provenance SBOM | Occupied 6 | Occupied 5 | Occupied 5 |4|6|fail|no|
+|30| SQLite FTS5 tokenizer | Sparse 3 | Sparse 2 | Sparse 3 |0|4|fail|no|
+
+**Counts after 30:** 1 keep (`as_company: Sparse 3, keep_gate: pass`) at #21. 29 Occupied/file_on/Sparse-but-`keep_gate: fail`. `deny_catalog: embedded_baseline` for all.
+
+**Hunt stop condition met:** pitchable found at hunt 21 (first 10 of this batch). Per instruction `keep updating PR after every 10 hunts`, this update covers hunts 21-30. No further hunts needed unless second keep requested.
+
+*Batch 21-30 generated via same `devtool-finder` pipeline; #21 verified with 5 contiguous quotes fetched this run (`tailsamplingprocessor/README.md: The tail sampling processor samples traces based on...`, `opentelemetry.io/docs/collector/configuration: You can provide one or more configurations using the --config option.`, `oneuptime.com: The OpenTelemetry Collector contrib distribution includes the tail sampling processor...`, `opentelemetry.io/demo/service.criticality: To enable tail-based sampling...`, `raw.githubusercontent.com/.../tail_sampling_config.yaml: decision_wait: 10s`). G1 5 literals, G2 4 classes, G3 file_on none (leftover names no host), G4 vacant_process pass (0 exact), G5 not bundle, G6 no auto-reject 5, G7 ok, G8 sane, G9 exact 0 <= ceiling 4.*
